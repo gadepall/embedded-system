@@ -12,7 +12,7 @@ We show how to program the Vaman FPGA/microcontroller board.
 \begin{enumerate}[label=\arabic*.,ref=\theenumi]
 	\item Follow the instructions available in the video at
 \begin{lstlisting}
-		https://github.com/whyakari/TermuxDisableProcces?tab=readme-ov-file
+https://github.com/whyakari/TermuxDisableProcces?tab=readme-ov-file
 \end{lstlisting}
 to ensure that termux is not killed during the following installation process.
 \item On termux-debian,
@@ -21,32 +21,36 @@ wget https://raw.githubusercontent.com/gadepall/fwc-1/main/scripts/setup.sh
 bash setup.sh
 \end{lstlisting}
 %
-\iffalse
 \item Login to termux-debian on the android device and execute the following commands
 \begin{lstlisting}
-cd /sdcard/Downloads
-mkdir -p fpga-examples
-cd/vaman/blink
-ql_symbiflow -compile -src /storage/emulated/0/Download/blink -d ql-eos-s3 -P PU64 -v helloworldfpga.v -t helloworldfpga -p quickfeather.pcf -dump binary
-scp /storage/emulated/0/Download/blink/helloworldfpga.bin pi@192.168.0.114:
+cd vaman/fpga/setup/codes/blink
+source ~/.vamenv/bin/activate
+ql_symbiflow -compile -src vaman/fpga/setup/codes/blink -d ql-eos-s3 -P PU64 -v helloworldfpga.v -t helloworldfpga -p quickfeather.pcf -dump binary
+scp blink/helloworldfpga.bin pi@192.168.0.114:
 \end{lstlisting}
 Make sure that the appropriate IP address for the raspberry pi is given in the above command.
 \item Now execute the following commands on the raspberry pi.
 \begin{lstlisting}
-python3 /root/Vaman-dev/Vaman-sdk/TinyFPGA-Programmer-Application/tinyfpga-programmer-gui.py --port /dev/ttyACM0 --appfpga /home/pi/helloworldfpga.bin --mode fpga
+python3 -m venv ~/.vamenv
+source ~/.vamenv/bin/activate
+git clone --recursive https://github.com/QuickLogic-Corp/TinyFPGA-Programmer-Application.git
+pip3 install tinyfpgab
+deactivate
+sudo reboot
+source ~/.vamenv/bin/activate
+python3 TinyFPGA-Programmer-Application/tinyfpga-programmer-gui.py --port /dev/ttyACM0 --appfpga /home/pi/helloworldfpga.bin --mode fpga
 \end{lstlisting}
 \item Make sure that the correct USB port address is given in the above command.  Then press the button to the right of the USB port.  After some time, the LED will start blinking red.
-	\fi
-\end{enumerate}
-%%
-\subsection{Frequency}
-%
-\renewcommand{\theequation}{\theenumi}
-\renewcommand{\thefigure}{\theenumi}
-\begin{enumerate}[label=\thesubsection.\arabic*.,ref=\thesubsection.\theenumi]
-\numberwithin{equation}{enumi}
-\numberwithin{figure}{enumi}
-\numberwithin{table}{enumi}
+\item Replace  the following line in the code in instruciton  \ref{eq:vaman/fpga/setup/program} 
+\begin{lstlisting}
+assign redled = led; //If you want to change led colour to red,
+\end{lstlisting}
+with
+\begin{lstlisting}
+assign blueled = led; 
+\end{lstlisting}
+and execute the code.
+\item Now modify the helloworldfpga.v  file to get the green led blinking.
 \item In the following verilog program, 
 \label{eq:vaman/fpga/setup/program}
 \begin{lstlisting}
@@ -89,15 +93,6 @@ so that the blink period becomes 0.5s.
 \begin{lstlisting}
 codes/blink/freq_count.py
 \end{lstlisting}
-\item Replace  the following line in the code in instruciton  \ref{eq:vaman/fpga/setup/program} 
-\begin{lstlisting}
-assign redled = led; //If you want to change led colour to red,
-\end{lstlisting}
-with
-\begin{lstlisting}
-assign blueled = led; 
-\end{lstlisting}
-and execute the code.
 \item Ensure that the LED stays on in green colour.
 	\\
 \solution  Execute the following code
