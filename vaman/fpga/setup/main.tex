@@ -62,7 +62,7 @@ pay attention to the following lines
 delay = delay+1;                                                                                                   
 if(delay > 20000000)
 begin
-delay=27'b0;
+delay=25'b0;
 led=!led;
 end
 \end{lstlisting}
@@ -76,7 +76,7 @@ if(delay > 20000000)
 %
 with
 \begin{lstlisting}
-if(delay==27'b1001100010010110100000000)
+if(delay==25'b1001100010010110100000000)
 \end{lstlisting}
 and execute the verilog code.
 \item Since the delay is 20 MHz, the blink period is 1 second.  Modify the verilog code
@@ -85,7 +85,7 @@ so that the blink period becomes 0.5s.
 \\
 \solution 
 \begin{align}
-\log_2\brak{20000000} \approx 27
+\log_2\brak{20000000} \approx 25
 \end{align}
 \item Obtain the above answer using a Python code.
 \\
