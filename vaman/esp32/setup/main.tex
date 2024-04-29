@@ -5,20 +5,10 @@ Here we show how to program the ESP32 on the Vaman using the Arduino framework.
 \item Make connections as shown in \autoref{tab:arduino-uart}.
 	%and \autoref{fig:vaman/uart/1}. 
 \item The Vaman pin diagram is available in \autoref{fig:vaman-pin_sheet}.
-	\iffalse
-\begin{figure}[!ht]
-\centering
-    \resizebox{\columnwidth}{!}{%
-\input{vaman-esp32/arduino-uart/figs/circuit.tex}
-	}
-\caption{Circuit Connections}
-\label{fig:vaman/uart/1}
-\end{figure}
-\fi
 \begin{figure*}
 \centering
 \includegraphics[width=\columnwidth]{vaman-esp32/lcd/figs/pin_sheet.png}
-\caption{Vaman pins.  Right side reperesents ESP32 and left side M4-FPGA.}
+	\caption{Vaman pins.  Right side reperesents ESP32 and left side M4-FPGA (Pygmy).}
 \label{fig:vaman-pin_sheet}
 \end{figure*}
 \begin{table}[!ht]
@@ -27,49 +17,14 @@ Here we show how to program the ESP32 on the Vaman using the Arduino framework.
 \label{tab:arduino-uart}
 \end{table}
 %
-\item Connect the Arduino-UART to raspberry pi through USB.  
-	\iffalse
-\item On the rpi
-\begin{lstlisting}
-dmesg | tail
-lsusb
-\end{lstlisting}
-you should see the USB-UART connector detected. 
-\item Connect the Arduino-UART pins to the Vaman ESP32 pins according to Table 
-		\ref{tab:vaman/esp32/setup/vaman-uart}
-	\begin{table}[!h]
-		\input{vaman/esp32/setup/tables/vaman-uart.tex}
-		\caption{}
-		\label{tab:vaman/esp32/setup/vaman-uart}
-	\end{table}
-	\fi
-
-\item Connect the Vaman-ESP pins to the seven segment display  according to Table 
-		\ref{tab:vaman/esp32/setup/esp-display}
-	\begin{table}[!h]
-		\input{vaman/esp32/setup/tables/esp-display.tex}
-		\caption{}
-		\label{tab:vaman/esp32/setup/esp-display}
-	\end{table}
-	\iffalse
-	The GPIO pins are listed in Table 
-		\ref{tab:vaman/esp32/setup/esp-pins}
-	\begin{table}[!h]
-		\input{vaman/esp32/setup/tables/esp-pins.tex}
-		\caption{}
-		\label{tab:vaman/esp32/setup/esp-pins}
-	\end{table}
-	Note that these pins can be used for several functions, refer to the ESP32 datasheet
-		for details.  
-		The Vaman pin diagram is available in 
-\figref{fig:vaman/fpga/setup/pin_sheet}
-		Fig. \ref{fig:vaman/esp32/setup/lc}
-	\begin{figure}[!h]
-		\includegraphics[width=\columnwidth]{vaman/esp32/setup/figs/lc.jpg}
-		\caption{}
-		\label{fig:vaman/esp32/setup/lc}
-	\end{figure}
-	\fi
+\item Connect the UART to raspberry pi through USB.  
+\item Connect the pins between Vaman-ESP32 and Vaman-PYGMY as per \autoref{tab:vaman/esp32/setup/onboard}
+\begin{table}[h]
+\centering
+\input{./vaman/esp32/setup/tables/onboard.tex}
+\caption{}
+\label{tab:vaman/esp32/setup/onboard}
+\end{table}
 \item On termux on your phone, 
 \begin{lstlisting}
 cd vaman/esp32/codes/ide/blink
@@ -86,6 +41,10 @@ scp .pio/build/esp32doit-devkit-v1/firmware.bin pi@192.168.50.252:./hi/.pio/buil
 cd /home/pi/hi
 pio run -t nobuild -t upload
 \end{lstlisting}
+You should see the blue led blinking.
+\item Now disconnect pin 2 from pin 18 and connect to pygmy GPIO pin 21.  
+\item Repeat the above exercise using 
+	GPIO pin 22.
 \item On your phone, open 
 \begin{lstlisting}
 src/main.cpp 
@@ -95,32 +54,6 @@ and change the delay to
 delay(100);
 \end{lstlisting}
 and execute the code by following the steps above.
-\iffalse
-\end{enumerate}
-\subsubsection{ESP IDF}
-\renewcommand{\theequation}{\theenumi}
-\renewcommand{\thefigure}{\theenumi}
-\begin{enumerate}[label=\thesection.\arabic*.,ref=\thesection.\theenumi]
-\numberwithin{equation}{enumi}
-\numberwithin{figure}{enumi}
-\numberwithin{table}{enumi}
-\item Earlier, we were using the arduino framework, where the programming language was arduino.  In the following directory, the same functionality is achieved through a C program.
-\begin{lstlisting}
-cd vaman/esp32/codes/idf/blink
-pio run
-\end{lstlisting}
-\item The flashing process remains the same.
-\end{enumerate}
-
-
-\subsubsection{OTA}
-\renewcommand{\theequation}{\theenumi}
-\renewcommand{\thefigure}{\theenumi}
-\begin{enumerate}[label=\thesection.\arabic*.,ref=\thesection.\theenumi]
-\numberwithin{equation}{enumi}
-\numberwithin{figure}{enumi}
-\numberwithin{table}{enumi}
-\fi
 \item Flash the following code. 
 \begin{lstlisting}
 vaman/esp32/codes/ide/ota/setup
@@ -147,24 +80,6 @@ pio run
 pio run -t nobuild -t upload --upload-port 192.168.231.245
 \end{lstlisting}
 where you may replace the above ip address with the ip address of your vaman-esp.
-\item Connect pin 2 to an LED  to see it blinking.
-	\iffalse
-\end{enumerate}
-\subsubsection{Onboard LED}
-\renewcommand{\theequation}{\theenumi}
-\renewcommand{\thefigure}{\theenumi}
-\begin{enumerate}[label=\thesection.\arabic*.,ref=\thesection.\theenumi]
-\numberwithin{equation}{enumi}
-\numberwithin{figure}{enumi}
-\numberwithin{table}{enumi}
-\fi
-\item Connect the pins between Vaman-ESP32 and Vaman-PYGMY as per Table \ref{tab:vaman/esp32/setup/onboard}
-\begin{table}[h]
-\centering
-\input{./vaman/esp32/setup/tables/onboard.tex}
-\caption{}
-\label{tab:vaman/esp32/setup/onboard}
-\end{table}
 \item Flash the following code OTA
 \begin{lstlisting}
 vaman/esp32/codes/ide/ota/blinkt

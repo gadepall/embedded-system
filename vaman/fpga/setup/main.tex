@@ -25,10 +25,11 @@ bash setup.sh
 \begin{lstlisting}
 cd vaman/fpga/setup/codes/blink
 source ~/.vamenv/bin/activate
-ql_symbiflow -compile -src vaman/fpga/setup/codes/blink -d ql-eos-s3 -P PU64 -v helloworldfpga.v -t helloworldfpga -p quickfeather.pcf -dump binary
+ql_symbiflow -compile -src vaman/fpga/setup/codes/blink -d ql-eos-s3 -P PU64 -v helloworldfpga.v -t helloworldfpga -p pygmy.pcf -dump binary
 scp blink/helloworldfpga.bin pi@192.168.0.114:
 \end{lstlisting}
 Make sure that the appropriate IP address for the raspberry pi is given in the above command.
+\item Put the Vaman board in download mode.  For this, you need to first press the button to the right of the usb port and immediately press the button to the left.  The green led should now flash and you can go to the next step.  
 \item Now execute the following commands on the raspberry pi.
 \begin{lstlisting}
 python3 -m venv ~/.vamenv
@@ -38,9 +39,9 @@ pip3 install tinyfpgab
 deactivate
 sudo reboot
 source ~/.vamenv/bin/activate
-python3 TinyFPGA-Programmer-Application/tinyfpga-programmer-gui.py --port /dev/ttyACM0 --appfpga /home/pi/helloworldfpga.bin --mode fpga
+python3 TinyFPGA-Programmer-Application/tinyfpga-programmer-gui.py --port /dev/ttyACM0 --appfpga /home/pi/helloworldfpga.bin --mode fpga --reset
 \end{lstlisting}
-\item Make sure that the correct USB port address is given in the above command.  Then press the button to the right of the USB port.  After some time, the LED will start blinking red.
+\item Make sure that the correct USB port address is given in the above command.    After some time, the LED will start blinking red.
 \item Replace  the following line in the code in instruciton  \ref{eq:vaman/fpga/setup/program} 
 \begin{lstlisting}
 assign redled = led; //If you want to change led colour to red,
@@ -50,6 +51,15 @@ with
 assign blueled = led; 
 \end{lstlisting}
 and execute the code.
+\item In the following .pcf file,
+\begin{lstlisting}
+codes/blink/pygmy.pcf
+\end{lstlisting}
+the pin numbers for the 3 colour-leds are defined.  See 
+\autoref{tab:vaman/esp32/setup/onboard}
+and
+\autoref{fig:vaman/fpga/sevenseg/pins}.  The IO locations in 
+		\autoref{fig:vaman/fpga/sevenseg/pins} can be found in pygmy.pcf while the aliases (GPIO) are printed on the board.
 \item Now modify the helloworldfpga.v  file to get the green led blinking.
 \item In the following verilog program, 
 \label{eq:vaman/fpga/setup/program}
@@ -89,7 +99,7 @@ so that the blink period becomes 0.5s.
 \end{align}
 \item Obtain the above answer using a Python code.
 \\
-\solution Exeucte the following code and compare with instruction  \ref{eq:vaman/fpga/setup/binary}.
+\solution Execute the following code and compare with instruction  \ref{eq:vaman/fpga/setup/binary}.
 \begin{lstlisting}
 codes/blink/freq_count.py
 \end{lstlisting}
@@ -99,28 +109,45 @@ codes/blink/freq_count.py
 \begin{lstlisting}
 vaman/setup/codes/blink/onoff.v
 \end{lstlisting}
-\item  Using Table \ref{tab:vaman/fpga/setup/input} and Fig.  \ref{fig:vaman/fpga/setup/pin_sheet}, control the onboard LED
-through an external input. Connect an external LED and control it using an output pin as well.
-%
+\item Execute the following code and make pin connections as per
+\autoref{tab:vaman/fpga/setup/input}.
+	Take out the input pin connect to 3.3V. Plug it again.
+Do this repeatedly.
+\begin{lstlisting}
+vaman/setup/codes/input/blink_ip.v
+vaman/setup/codes/input/pygmy.pcf
+\end{lstlisting}
 \begin{table}[]
 \centering
 \begin{tabular}{|l|l|l|}
 \hline
 Type & Vaman Pin  &  Connection \\ \hline
-Input &  IO\_28 &  GND\\ \hline
-Output  & IO\_11  &  LED\\ \hline
+Input &  IO\_28 &  3.3V \\ \hline
+%Output  & IO\_11  &  LED\\ \hline
 \end{tabular}
 \caption{Vaman Input/Output.}
 \label{tab:vaman/fpga/setup/input}
 \end{table}
+\item Connect an external LED and repeat.
+%
+\begin{figure*}[!ht]
+\centering
+\includegraphics[width = \textwidth]{vaman/fpga/sevenseg/figs/pins.jpg}
+\caption{Pin Definitions}
+\label{fig:vaman/fpga/sevenseg/pins}
+\end{figure*}
 
-\solution Execute the following code and take out the input pin connect to GND. Plug it again.
-Do this repeatedly.
-
+\iffalse
+\item  Table \ref{table:sevenseg} and
+the PU 64 table in Fig. \ref{fig:vaman/fpga/sevenseg/pins}  explain the pin numbering in the following file.
 \begin{lstlisting}
-vaman/setup/codes/input/blink_ip.v
-vaman/setup/codes/input/pygmy.pcf
+codes/static/Vaman.pcf
 \end{lstlisting}
+\item  Using \autoref{tab:vaman/fpga/setup/input} and
+\autoref{fig:vaman/fpga/sevenseg/pins}, control the onboard LED
+through an external input. 
+\fi
+
 
 
 \end{enumerate}
